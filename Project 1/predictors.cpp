@@ -33,7 +33,7 @@ void getBranches(char* fileName){
 int alwaysTaken(){
   int result = 0;
 
-  for(int i = 0; i < behaviors.size(); i++) {
+  for(int i = 0; i < (int)behaviors.size(); i++) {
 
     if(behaviors[i] == "T") {
       result++;
@@ -57,7 +57,7 @@ int bimodal1Bit(int tablePower){
     mask++;
   }
 
-  for(int i = 0; i < behaviors.size(); i++) {
+  for(int i = 0; i < (int)behaviors.size(); i++) {
 
     int tableBlock = addrs[i] & mask;
     if(behaviors[i] == "T"){
@@ -119,7 +119,7 @@ int bimodal2Bit(int tablePower){
     mask++;
   }
 
-  for(int i = 0; i < behaviors.size(); i++) {
+  for(int i = 0; i < (int)behaviors.size(); i++) {
 
     int tableBlock = addrs[i] & mask;
     if(behaviors[i] == "T"){
@@ -152,7 +152,7 @@ int gshare(int historyLength){
     mask++;
   }
 
-  for(int i = 0; i < behaviors.size(); i++) {
+  for(int i = 0; i < (int)behaviors.size(); i++) {
 
     int checker = addrs[i] & mask;
     checker = checker ^ globalHistory;
@@ -205,7 +205,7 @@ int tournament(){
     mask++;
   }
 
-  for(int i = 0; i < behaviors.size(); i++){
+  for(int i = 0; i < (int)behaviors.size(); i++){
     bool gshareBool = false;
     bool bimodalBool = false;
     bool tournamentBool = false;
@@ -271,7 +271,7 @@ vector<int> BTB(){
     mask++;
   }
 
-  for(int i = 0; i < behaviors.size(); i++) {
+  for(int i = 0; i < (int)behaviors.size(); i++) {
     int tableBlock = addrs[i] & mask;
     if(history[tableBlock] == 1){
       taken++;
