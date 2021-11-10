@@ -46,10 +46,11 @@ int directMapped(vector<pair<char, unsigned int>> data, int cacheSize){
 }
 
 int setAssociative(vector<pair<char, unsigned int>> data, int associativity){
-  int powNum = pow(2, 14), result = 0, mask = (1 << 10) - 1, numSets = (powNum / 32) / associativity;
+  int powNum = pow(2, 14), result = 0, numSets = (powNum / 32) / associativity;
   unsigned int cache[numSets][associativity];
   int validBits[numSets][associativity];
   vector<vector<int>> leastUsed;
+  int mask = (1 << (5 + (int)log2(numSets))) - 1;
 
   for(int i = 0; i < numSets; i++){
     for(int j = 0; j < associativity; j++){
@@ -109,6 +110,7 @@ int main(int argc, char** argv){
     outputFile << setAssociative(inputData, 4) << "," << numOps << "; ";
     outputFile << setAssociative(inputData, 8) << "," << numOps << "; ";
     outputFile << setAssociative(inputData, 16) << "," << numOps << "; " << endl;
+    outputFile << setAssociative(inputData, 512) << "," << numOps << "; " << endl;
   } else {
     cout << "Unable to open " << argv[2] << endl;
   }
