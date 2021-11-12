@@ -203,79 +203,6 @@ int noWrite(vector<pair<char, unsigned int>> data, int associativity){
   return result;
 }
 
-int nextPrefetch(vector<pair<char, unsigned int>> data, int associativity){
-  int powNum = pow(2, 14), result = 0, numSets = (powNum / 32) / associativity;
-  unsigned int cache[numSets][associativity];
-  int validBits[numSets][associativity];
-  vector<vector<int>> leastUsed;
-  int mask = (1 << (5 + (int)log2(numSets))) - 1;
-
-  for(int i = 0; i < numSets; i++){
-    for(int j = 0; j < associativity; j++){
-      validBits[i][j] = 0;
-    }
-    vector<int> curSet;
-    leastUsed.push_back(curSet);
-  }
-
-  for(int i = 0; i < data.size(); i++){
-    int block = (data[i].second / 32) % (powNum / 32);
-    int setNum = block % (numSets);
-    unsigned int remainder = data[i].second & (~mask);
-    bool stored = false;
-    for(int j = 0; j < associativity; j++){
-      if(validBits[setNum][j] == 0){
-        validBits[setNum][j] = 1;
-        cache[setNum][j] = remainder;
-        stored = true;
-        leastUsed[setNum].push_back(j);
-        if(j + 1 < associativity){
-          validBits[setNum][j + 1] = 1;
-          cache[setNum][j + 1] = remainder + 32;
-          leastUsed[setNum].push_back(j + 1);
-        } else {
-          cache[setNum][leastUsed[setNum][0]] = remainder + 32;
-          leastUsed[setNum].push_back(leastUsed[setNum][0]);
-          leastUsed[setNum].erase(leastUsed[setNum].begin());
-        }
-        break;
-      }
-      if(validBits[setNum][j] != 0 && cache[setNum][j] == remainder){
-        result++;
-        stored = true;
-        leastUsed[setNum].erase(remove(leastUsed[setNum].begin(), leastUsed[setNum].end(), j), leastUsed[setNum].end());
-        leastUsed[setNum].push_back(j);
-        bool storedAgain = false;
-        for(int k = j + 1; k < associativity; k++){
-          if(validBits[setNum][k] == 0){
-            validBits[setNum][k] = 1;
-            cache[setNum][k] = remainder;
-            leastUsed[setNum].push_back(k);
-            storedAgain = true;
-            break;
-          }
-        }
-        if(!storedAgain){
-          cache[setNum][leastUsed[setNum][0]] = remainder;
-          leastUsed[setNum].push_back(leastUsed[setNum][0]);
-          leastUsed[setNum].erase(leastUsed[setNum].begin());
-        }
-        break;
-      }
-    }
-    if(!stored){
-      cache[setNum][leastUsed[setNum][0]] = remainder;
-      leastUsed[setNum].push_back(leastUsed[setNum][0]);
-      leastUsed[setNum].erase(leastUsed[setNum].begin());
-      cache[setNum][leastUsed[setNum][0]] = remainder + 32;
-      leastUsed[setNum].push_back(leastUsed[setNum][0]);
-      leastUsed[setNum].erase(leastUsed[setNum].begin());
-    }
-  }
-
-  return result;
-}
-
 int main(int argc, char** argv){
   if(argc != 3){
     cout << "Usage: ./cache-sim <input file> <output file>" << endl;
@@ -301,10 +228,6 @@ int main(int argc, char** argv){
     outputFile << noWrite(inputData, 4) << "," << numOps << "; ";
     outputFile << noWrite(inputData, 8) << "," << numOps << "; ";
     outputFile << noWrite(inputData, 16) << "," << numOps << "; " << endl;
-    outputFile << nextPrefetch(inputData, 2) << "," << numOps << "; ";
-    outputFile << nextPrefetch(inputData, 4) << "," << numOps << "; ";
-    outputFile << nextPrefetch(inputData, 8) << "," << numOps << "; ";
-    outputFile << nextPrefetch(inputData, 16) << "," << numOps << "; " << endl;
   } else {
     cout << "Unable to open " << argv[2] << endl;
   }
