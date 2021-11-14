@@ -92,7 +92,7 @@ int setAssociative(vector<pair<char, unsigned int>> data, int associativity){
 }
 
 vector<int> updateHeat(vector<int> heatBits, int index){
-  int max = heatBits.size() - 1, min = 0;
+  int max = heatBits.size(), min = 0;
   int prevMax = -1, prevMin = -1;
   int runs = (int)log2(heatBits.size() + 1);
   for(int i = 0; i < runs; i++){
