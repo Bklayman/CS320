@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <math.h>
@@ -31,7 +32,7 @@ int directMapped(vector<pair<char, unsigned int>> data, int cacheSize){
     validBits[i] = 0;
   }
 
-  for(int i = 0; i < data.size(); i++){
+  for(int i = 0; i < (int)data.size(); i++){
     int block = (data[i].second / 32) % (powNum / 32);
     unsigned int remainder = data[i].second & (~mask);
     if(validBits[block] == 0 || cache[block] != remainder){
@@ -60,7 +61,7 @@ int setAssociative(vector<pair<char, unsigned int>> data, int associativity){
     leastUsed.push_back(curSet);
   }
 
-  for(int i = 0; i < data.size(); i++){
+  for(int i = 0; i < (int)data.size(); i++){
     int block = (data[i].second / 32) % (powNum / 32);
     int setNum = block % (numSets);
     unsigned int remainder = data[i].second & (~mask);
@@ -93,11 +94,8 @@ int setAssociative(vector<pair<char, unsigned int>> data, int associativity){
 
 vector<int> updateHeat(vector<int> heatBits, int index){
   int max = heatBits.size(), min = 0;
-  int prevMax = -1, prevMin = -1;
   int runs = (int)log2(heatBits.size() + 1);
   for(int i = 0; i < runs; i++){
-    prevMax = max;
-    prevMin = min;
     int checkIndex = (max + min) / 2;
     if(index <= checkIndex){
       heatBits[checkIndex] = 0;
@@ -124,7 +122,7 @@ int hotCold(vector<pair<char, unsigned int>> data){
     }
   }
 
-  for(int i = 0; i < data.size(); i++){
+  for(int i = 0; i < (int)data.size(); i++){
     unsigned int remainder = data[i].second & (~mask);
     bool stored = false;
     for(int j = 0; j < associativity; j++){
@@ -171,7 +169,7 @@ int noWrite(vector<pair<char, unsigned int>> data, int associativity){
     leastUsed.push_back(curSet);
   }
 
-  for(int i = 0; i < data.size(); i++){
+  for(int i = 0; i < (int)data.size(); i++){
     int block = (data[i].second / 32) % (powNum / 32);
     int setNum = block % (numSets);
     unsigned int remainder = data[i].second & (~mask);
@@ -218,7 +216,7 @@ int prefetchOnMiss(vector<pair<char, unsigned int>> data, int associativity){
     leastUsed.push_back(curSet);
   }
 
-  for(int i = 0; i < data.size(); i++){
+  for(int i = 0; i < (int)data.size(); i++){
     int block = (data[i].second / 32) % (powNum / 32);
     int setNum = block % (numSets);
     unsigned int remainder = data[i].second & (~mask);
@@ -292,12 +290,11 @@ int prefetchAll(vector<pair<char, unsigned int>> data, int associativity){
     leastUsed.push_back(curSet);
   }
 
-  for(int i = 0; i < data.size(); i++){
+  for(int i = 0; i < (int)data.size(); i++){
     int block = (data[i].second / 32) % (powNum / 32);
     int setNum = block % (numSets);
     unsigned int remainder = data[i].second & (~mask);
     bool stored = false;
-    bool miss = true;
     for(int j = 0; j < associativity; j++){
       if(validBits[setNum][j] == 0){
         validBits[setNum][j] = 1;
@@ -309,7 +306,6 @@ int prefetchAll(vector<pair<char, unsigned int>> data, int associativity){
       if(validBits[setNum][j] != 0 && cache[setNum][j] == remainder){
         result++;
         stored = true;
-        miss = false;
         leastUsed[setNum].erase(remove(leastUsed[setNum].begin(), leastUsed[setNum].end(), j), leastUsed[setNum].end());
         leastUsed[setNum].push_back(j);
         break;
